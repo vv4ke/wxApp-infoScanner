@@ -1,9 +1,26 @@
 # 文件黑白名单配置
+# 默认使用黑名单且优先级高
+Black_Suffix_list:
+  active: true
+  suffix_list:
+    - jpg
+    - jpeg
+    - png
+    - mp3
+    - mp4
+    - gif
+
+White_Suffix_list:
+  active: true
+  suffix_list:
+    - js
+    - html
+    - json
 
 ---
 
 # 正则配置
-# url 识别模块
+# url识别模块
 #url_regex_rules: https:\/\/[a-zA-Z0-9\/.?=%&:]*|http:\/\/[a-zA-Z0-9\/.?=%&:]*
 Url_regex: \b(?:https?://|www\.)\S+\b
 
