@@ -1,10 +1,13 @@
-import pandas as pd
+import os
+import time
 
-# 读取JSON数据
-json_data = {'name': ['John', 'Mary', 'Peter', '1'], 'age': [25, 30, 35]}
-df = pd.DataFrame.from_dict(json_data, orient='index').transpose()
+path_to_watch = r"H:\WeChat Files\WeChat Files"  # 替换为您要监视的文件夹路径
+before = dict([(f, None) for f in os.listdir(path_to_watch)])
 
-# 将数据存储到Excel表格中
-writer = pd.ExcelWriter('data.xlsx', engine='openpyxl')
-df.to_excel(writer, sheet_name='Sheet1', index=False)
-writer.book.save('data.xlsx')
+while True:
+    time.sleep(10)  # 每隔10秒钟检查一次
+    after = dict([(f, None) for f in os.listdir(path_to_watch)])
+    added = [f for f in after if not f in before]
+    if added:
+        print("New folder(s) created:", ", ".join(added))
+    before = after

@@ -34,14 +34,14 @@ White_Suffix_list:
 
 # 正则配置
 # 域名匹配
-Domain_regex: https?://([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.)+(?:com|org|net|edu|gov|int|mil|biz|info|name|pro|xyz|top|club|cn)
+Domain_regex: ^(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.)+(?:com|org|net|edu|gov|int|mil|biz|info|name|pro|xyz|top|club|cn)
 
 # url识别模块
 #url_regex_rules: https:\/\/[a-zA-Z0-9\/.?=%&:]*|http:\/\/[a-zA-Z0-9\/.?=%&:]*
 Url_regex: (?:https?://|www\.)[a-zA-Z0-9\./=?%\+&_-]+
 
 # uri路由
-Uri_regex: (["']((?:\.\.\/)*\/?[a-zA-Z-_0-9%]+(?:/[a-zA-Z-_0-9?%=&\+\.]+)+)["'])
+Uri_regex: \/?[a-zA-Z-_0-9?%=&\+]+(?:\/[a-zA-Z-_0-9?%=&\+]+)+
 
 # ip地址
 Private_Ip_regex: ((127\.0\.0\.1)|(10(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){3})|(172\.((1[6-9])|(2\d)|(3[01]))(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){2})|(192\.168(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){2}))(?!\d)
@@ -56,9 +56,9 @@ Github_Access_Token_regex: ([a-zA-Z0-9_-]*:[a-zA-Z0-9_-]*@github\.com)
 Email_regex: ([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,})
 Js_Comment_regex: // .*
 Private_Key_regex: ([-]+BEGIN [^\s]+ PRIVATE KEY[-]*)
-Crypto_regex: ([Ee]ncrypt\(|[Dd]ecrypt\()
+#Crypto_regex: ([Ee]ncrypt\(|[Dd]ecrypt\()
+Crypto_regex: \W(Base64\.encode|Base64\.decode|btoa|atob|CryptoJS\.AES|CryptoJS\.DES|JSEncrypt|rsa|KJUR|$\.md5|md5|sha1|sha256|sha512)[\(\.]
 Jwt_regex: (['"](ey[A-Za-z0-9_-]{10,}\.[A-Za-z0-9._-]{10,}|ey[A-Za-z0-9_\/+-]{10,}\.[A-Za-z0-9._\/+-]{10,})['"])
-#Crypto_regex: \W(Base64\.encode|Base64\.decode|btoa|atob|CryptoJS\.AES|CryptoJS\.DES|JSEncrypt|rsa|KJUR|$\.md5|md5|sha1|sha256|sha512)[\(\.]
 
 ---
 
