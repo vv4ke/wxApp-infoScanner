@@ -1,2 +1,6 @@
 <script src="../../../../1/js/java.js"></script>
 <a href='../2/js/1.json'>
+asd'../../api/asd/key'asd
+asd"./asd/we'
+as'asd/as-_123d'asd
+dd'asd/as-_123d'asd

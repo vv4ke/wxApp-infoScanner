@@ -11,33 +11,6 @@
     selectRepairTel: yangXiaoFuMini + '/property/repair/selectRepairTel', //维修操作
 
 
-"use strict";
-// 个人帐号appid:wx97967c64e7f15564
-// 测试账号"appid":  wxc321c7dea06ef8bc,
-// 账号"appid":  wx41c7968ecfa96e00,
-
-// const host = process.env.NODE_ENV==='production'? "https://shuzihouqin.cmccsi.cn:83":"http://36.138.166.165:82";
-// const host = "http://36.138.166.165adasd:82";
-
-// const host = "http://36.138.165.228:92";
-// const host = "http://192.168.0.6:82";
-
-// const host = "http://36.138.165.228:92";
-var host = "https://shuzihouqin.cmccsi.cn:83/asd/?id=12&a=%20";
-var baseUrl = host + "/Service";
-var yangXiaoFuMini = baseUrl + "/business";
-
-<script src="https://shuzihouqin.cmccsi.cn:83/asd/?id=12&a=%20">asd</script>
-
-
-accessKeyId = 'asdjndjanjknandj'
-# AccesskeyID = "asdjndjanjknandj"
-
- host = "https://shuzihouqin.cmccsi.cn:83/asd/?id=12&a=%20";
-var baseUrl = host + "/Service";
-var yangXiaoFuMini = baseUrl + "/business";
-
-
 /asdasd:ghp_hdabhudbandiuFHFIHCI10837bn123@githubscom/
 
 
