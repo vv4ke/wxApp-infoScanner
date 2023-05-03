@@ -159,6 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-app_code
-output
-test_folder
+app_code/
+output/
+test_folder/
