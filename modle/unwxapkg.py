@@ -7,7 +7,8 @@ import config
 from modle import infoFinder
 
 
-def monitor_folder(File_Config):
+def monitor_folder(all_config):
+    File_Config = all_config['File_Config']
     WX_Applet_Path = File_Config['WX_Applet_Path']
 
     before = dict([(f, None) for f in os.listdir(WX_Applet_Path)])
@@ -23,7 +24,7 @@ def monitor_folder(File_Config):
                 print("等待程序下载...")
                 time.sleep(File_Config['Sleep_Time'])   # 等待程序下载
                 Applet_Packet_Save_Folder = unveilr_unpacket(WX_Applet_Path, son_folder, File_Config)
-                infoFinder.infoFinder(Applet_Packet_Save_Folder)
+                infoFinder.infoFinder(Applet_Packet_Save_Folder, all_config)
         before = after
 
 
@@ -63,5 +64,5 @@ def unveilr_unpacket(mon_folder='', son_folder='', File_Config=None):
 
 if __name__ == '__main__':
     config_yaml = r'./config.yaml'
-    file_Config = config.load_config(config_yaml, load_type='File_Config')
-    monitor_folder(file_Config)
+    all_Config = config.load_config(config_yaml)
+    monitor_folder(all_Config)

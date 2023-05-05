@@ -143,8 +143,7 @@ def check_folder_exists(folder_path=None):
     return
 
 
-def infoFinder(target_folder=''):
-    all_config = config.load_config(r'./config.yaml')
+def infoFinder(target_folder='', all_config=None):
     File_Config = all_config['File_Config']
     Regex_Config = all_config['Regex_Config']
     match_results = start_scan(File_Config, Regex_Config, target_folder)
