@@ -50,10 +50,9 @@ Regex_Config:
   #Domain_regex: (https?://)?(([a-zA-Z0-9-_]{1,61}[a-zA-Z0-9-_]\.)+(?:com|org|net|edu|gov|int|mil|biz|info|name|pro|aero|coop|museum|asia|cat|jobs|mobi|tel|travel|xxx|[a-z]{2}|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cu|cv|cw|cx|cy|cz|de|dj|dk|dm|do|dz|ec|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|za|zm|zw)(?::[0-9]{1,5})?)
 
   # url识别模块
-  Url_regex: (?:https?://|www\.)[a-zA-Z0-9\./=?%\+&_-]+
+  Url_regex: (?:https?://|www\.)[a-zA-Z0-9\./=:?%\+&_-]+
   # uri路由
-
-  Uri_regex: ([\"']((?:[\./]+)?[a-zA-Z-_0-9]+(?:/[a-zA-Z-_0-9?%=&\+\./]+)+)[\"'])
+  Uri_regex: (?:[\"']((?:[\./]+)?(?:/[a-zA-Z-_0-9?%=&\+\./]+)+)[\"'])
 
   # ip地址
   Private_Ip_regex: ((127\.0\.0\.1)|(10(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){3})|(172\.((1[6-9])|(2\d)|(3[01]))(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){2})|(192\.168(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){2}))(?!\d)
@@ -67,6 +66,7 @@ Regex_Config:
   # 宁可错杀不可放过系列
   Account_regex: (?:账[号户]|[Aa]ccount).{,30}
   Passwd_regex: (?:密码|[Pp]assw(?:or)?d).{,30}
+  Test_regex: (?:测试).{,30}
   # api/access/secret/my key/id/value/token 大杂烩 超赞！
   AK_regex: (?:[Aa][Pp][Ii]|[Aa][Cc]{2}[Ee][Ss]{2}|[Ss][Ee][Cc][Rr][Ee][Tt]|[Mm][Yy]).{,20}(?:[Kk][Ee][Yy]|[Ii][Dd]|[Vv][Aa][Ll][Uu][Ee]|[Tt][Oo][Kk][Ee][Nn]).{,30}
   Github_Access_Token_regex: ([a-zA-Z0-9_-]*:[a-zA-Z0-9_-]*@github\.com)
@@ -84,21 +84,38 @@ Request_Config:
   # 自动验活开关
   request_active: False
   # 域名黑白名单
-  hostname_config:
+  hostname_filter_rule:
     hostname_allowed: []
-    hostname_disallowed: []
-  # 允许的ip范围
-  allow_ip_range: []
+    hostname_disallowed:
+      - .github.com
+      - baidu.com
+      - google.com
+      - qq.com
+  # ip的黑白名单
+  ip_filter_rule:
+    ip_allowed: []
+    ip_disallowed: []
+  # uri的过滤规则
+  uri_filter_rule:
+    uri_allowed: []
+    uri_disallowed: []
+  # url拼凑规则,
+  scrabbled_rule: 2
+
   # 请求的方式
-  allow_methods:
-    - GET
-    - POST
+  http_methods:
+    methods_allowed:
+      - GET
+      - POST
+    methods_disallowed: []
   # 允许自动跳转
   allow_redirects: True
   headers:
     User-Agent: by vvak3
   # 非 200 页面尝试绕过
   bypass_config:
+
+  proxise:
 
 
 # 基本漏洞扫描
