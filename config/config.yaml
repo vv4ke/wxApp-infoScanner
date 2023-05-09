@@ -83,22 +83,26 @@ Regex_Config:
 Request_Config:
   # 自动验活开关
   request_active: False
-  # 域名黑白名单
+
+  # 去除一些常用遇到的域名, 正则or字符串, 黑白名单只取其一，白名单优先级高
   hostname_filter_rule:
-    hostname_allowed: []
-    hostname_disallowed:
-      - .github.com
+    allowed: []
+    disallowed:
+      - github.com
       - baidu.com
       - google.com
       - qq.com
-  # ip的黑白名单
+  # 去除一些ip, 正则or字符串, 黑白名单只取其一，白名单优先级高
   ip_filter_rule:
-    ip_allowed: []
-    ip_disallowed: []
+    allowed: []
+    disallowed:  # 默认不扫描内网ip
+      - ((127\.0\.0\.1)|(10(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){3})|(172\.((1[6-9])|(2\d)|(3[01]))(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){2})|(192\.168(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){2}))(?!\d)
+
   # uri的过滤规则
   uri_filter_rule:
-    uri_allowed: []
-    uri_disallowed: []
+    allowed: []
+    disallowed: # 默认去除带 del (删除) 字样的uri
+      - del
   # url拼凑规则,
   scrabbled_rule: 2
 

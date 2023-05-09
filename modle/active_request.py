@@ -3,6 +3,8 @@ api接口未授权扫描以及非 200 状态码绕过。
 
 """
 import queue
+import re
+
 import requests
 from urllib.parse import urlparse
 import socket
@@ -33,6 +35,7 @@ def scan_active(url_list=None, uri_list=None, Request_Config=None):
     # 黑白名单过滤一下
     if url_list is None:
         url_list = []
+    # 先用黑白名单筛选一波url和uri
     url_list = filter_list(url_list, Request_Config['hostname_filter_rule'])
     url_list = filter_list(url_list, Request_Config['ip_filter_rule'])
     uri_list = filter_list(uri_list, Request_Config['uri_filter_rule']).insert(0, '')
@@ -53,17 +56,36 @@ def scan_active(url_list=None, uri_list=None, Request_Config=None):
             tamp = scrabbled_url(url, uri, Request_Config['scrabbled_rule'])
             task_arg = []
 
-
-
     return
 
 
 # 根据黑白名单过滤一下数组
 def filter_list(old_list=None, filter_rule=None):
-    return ['1']
+    # 白名单优先
+    new_list = []
+    if filter_rule['allowed']:
+        for regex in filter_rule['allowed']:
+            regex = re.compile(regex)
+            for i in old_list:
+                if regex.search(i):
+                    new_list.append(i)
+                else:
+                    continue
+    elif filter_rule['disallowed']:
+        for regex in filter_rule['disallowed']:
+            regex = re.compile(regex)
+            for i in old_list:
+                if regex.search(i) is None:
+                    new_list.append(i)
+                else:
+                    continue
+    else:
+        pass
+    return new_list
 
 
 def host_alive(url_list=None):
+    # 筛选出端口存活的Domian或IP
     alive_host = []
     disalive_host = []
     alive_url_list = []

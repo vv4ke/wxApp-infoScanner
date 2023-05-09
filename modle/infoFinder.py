@@ -12,6 +12,7 @@ def worker(task_queue, results_queue):
         try:
             task_arg = task_queue.get(block=False)
             reg_rule_name, regex, target_folder, file_scan_config = task_arg
+            regex = re.compile(regex)   # 创建对象匹配速度快
             match_result = match_content(regex, target_folder, file_scan_config)
             # 将处理结果存储到 results 队列中
             result = [reg_rule_name, match_result]
@@ -60,7 +61,7 @@ def start_scan(file_scan_config, regex_config, target_folder):
     return match_results
 
 
-def match_content(reg, target_folder, file_scan_config):
+def match_content(regex, target_folder, file_scan_config):
     match_results = []
     for (current_path, son_folders_name, files_name) in os.walk(target_folder):
         # 先匹配当前文件夹中的文件
@@ -70,7 +71,7 @@ def match_content(reg, target_folder, file_scan_config):
                     with open(os.path.join(current_path, file), 'r', encoding='utf-8', errors='ignore') as f:
                         file_content = f.read()
                         # print(f"正则：{reg}\n文件：{os.path.join(current_path, file)}")
-                        match_result = re.findall(reg, file_content)
+                        match_result = regex.findall(file_content)
                         match_results += match_result
                 else:
                     continue
@@ -78,7 +79,7 @@ def match_content(reg, target_folder, file_scan_config):
         if son_folders_name is not None:
             for son_folder_name in son_folders_name:
                 son_target_folder = os.path.join(current_path, son_folder_name)
-                match_result = match_content(reg, son_target_folder, file_scan_config)
+                match_result = match_content(regex, son_target_folder, file_scan_config)
                 match_results += match_result
     return clear_list(match_results, file_scan_config)
 
