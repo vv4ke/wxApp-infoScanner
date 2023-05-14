@@ -104,22 +104,32 @@ Request_Config:
     disallowed: # 默认去除带 del (删除) 字样的uri
       - del
   # url拼凑规则,
-  scrabbled_rule: 2
+  scrabbled_rule: []
 
   # 请求的方式
   http_methods:
-    methods_allowed:
-      - GET
-      - POST
-    methods_disallowed: []
-  # 允许自动跳转
-  allow_redirects: True
+    - GET
+    - POST
   headers:
-    User-Agent: by vvak3
+    User-Agent: powered by vv4ke
+    Connection: close
+  cookies:
+    test_cookie: test
+  params:
+#    test: test
+  json:
+    test_json: test
+  # 允许自动跳转
+  allow_redirects: false
+  timeout: 10
+  verify: false
+  proxies:
+#    http: http://127.0.0.1:8080
+#    https: https://127.0.0.1:8080
+
+
   # 非 200 页面尝试绕过
   bypass_config:
-
-  proxise:
 
 
 # 基本漏洞扫描
