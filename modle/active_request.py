@@ -22,18 +22,26 @@ def req_work(task_queue, results_queue, Request_Config=None):
                                                 cookies=Request_Config['cookies'],
                                                 headers=Request_Config['headers'],
                                                 params=Request_Config['params'],
-                                                data=Request_Config['data'],
+                                                # data=Request_Config['data'],
                                                 json=Request_Config['json'],
                                                 allow_redirects=Request_Config['allow_redirects'],
                                                 verify=Request_Config['verify'],
                                                 timeout=Request_Config['timeout'],
                                                 proxies=Request_Config['proxies']
                                                 )
-                except:
+                    print(f"[{response.status_code} [{http_method}] {len(response.text.encode('utf-8')) / 1024} {url}")
+                    result = [
+                        response.status_code,
+                        http_method,
+                        len(response.text.encode('utf-8')) / 1024,
+                        url
+                    ]
+                    # 将处理结果存储到 results 队列中
+                    results_queue.put(result)
+                except requests.exceptions.Timeout:  # 处理请求超时的情况
                     pass
-            # 将处理结果存储到 results 队列中
-            result = [reg_rule_name, match_result]
-            results_queue.put(result)
+                except requests.exceptions.RequestException:  # 处理其他请求异常的情况
+                    pass
             task_queue.task_done()
         except queue.Empty:
             # 捕获队列为空的异常
@@ -60,9 +68,8 @@ def scan_active(url_list=None, uri_list=None, Request_Config=None):
     results_queue = queue.Queue()
     num_threads = 20
     threads = []
-    scan_result = []
 
-    if url_list:
+    if url_list is None:
         return None
 
     # 填充任务队列
@@ -88,11 +95,11 @@ def scan_active(url_list=None, uri_list=None, Request_Config=None):
     for t in threads:
         t.join()
 
-    # 将结果取出并存储到列表中
-    while not results_queue.empty():
-        reg_rule_name, match_result = results_queue.get(block=False)
-        match_results[reg_rule_name] = match_result
-    return match_results
+    # # 将结果取出并存储到列表中
+    # while not results_queue.empty():
+    #     status_code, http_method, body_length, url = results_queue.get(block=False)
+    #     match_results[reg_rule_name] = match_result
+    return results_queue
 
 
 # 根据黑白名单过滤一下数组

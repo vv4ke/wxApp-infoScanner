@@ -4,10 +4,9 @@
 # https://github.com/gh0stkey/HaE
 # https://github.com/moyuwa/wechat_appinfo_wxapkg
 
-
 # 文件相关配置
 File_Config:
-  WX_Applet_Path: E:\WeChatFile\WeChat Files\Applet
+  WX_Applet_Path: H:\WeChat Files\WeChat Files\Applet
   Sleep_Time: 10
   Applet_Packet_Save_Path: app_code
   Unveilr_Depth: 2
@@ -124,7 +123,7 @@ Request_Config:
   timeout: 10
   verify: false
   proxies:
-#    http: http://127.0.0.1:8080
+    http: http://127.0.0.1:10809
 #    https: https://127.0.0.1:8080
 
 

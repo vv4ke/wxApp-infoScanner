@@ -4,6 +4,7 @@ import queue
 import threading
 import pandas as pd
 import time
+from modle import active_request
 
 
 def worker(task_queue, results_queue):
@@ -144,12 +145,11 @@ def check_folder_exists(folder_path=None):
 
 
 def infoFinder(target_folder='', all_config=None):
-    File_Config = all_config['File_Config']
-    Regex_Config = all_config['Regex_Config']
-    match_results = start_scan(File_Config, Regex_Config, target_folder)
+    match_results = start_scan(all_config['File_Config'], all_config['Regex_Config'], target_folder)
     # for i in match_results:
     #     print(f'\033[0;32;40m{i}\033[0m: {match_results[i]}')
-    write2excel(match_results, File_Config['Excel_Folder'])
+    write2excel(match_results, all_config['File_Config']['Excel_Folder'])
+    active_request.scan_active(match_results['Url_regex'], match_results['Uri_regex'], all_config['Request_Config'])
     return
 
 
