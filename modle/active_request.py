@@ -8,9 +8,11 @@ import requests
 from urllib.parse import urlparse
 import socket
 import threading
+import urllib3
 
 
 def req_work(task_queue, results_queue, Request_Config=None):
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     # 定义一个线程执行的任务函数
     while True:
         try:
@@ -29,7 +31,7 @@ def req_work(task_queue, results_queue, Request_Config=None):
                                                 timeout=Request_Config['timeout'],
                                                 proxies=Request_Config['proxies']
                                                 )
-                    print(f"[{response.status_code} [{http_method}] {len(response.text.encode('utf-8')) / 1024} {url}")
+                    print(f"[{response.status_code}] [{http_method}] {len(response.text.encode('utf-8')) / 1024}KB {url}")
                     result = [
                         response.status_code,
                         http_method,
@@ -52,8 +54,12 @@ def req_work(task_queue, results_queue, Request_Config=None):
             task_queue.task_done()
 
 
+# def print_out(result=None, Request_Config=None):
+#     status_code, http_method, resp_len, url = result
+#     if status_code
+
+
 def scan_active(url_list=None, uri_list=None, Request_Config=None):
-    # 黑白名单过滤一下
     if url_list is None:
         url_list = []
     # 先用黑白名单筛选一波url和uri
@@ -61,12 +67,16 @@ def scan_active(url_list=None, uri_list=None, Request_Config=None):
     url_list = filter_list(url_list, Request_Config['ip_filter_rule'])
     uri_list = filter_list(uri_list, Request_Config['uri_filter_rule'])
 
+    # 然后手动筛选一遍domain
+    if Request_Config['manual_filter']:
+        url_list = manual_filter(url_list)
+
     # 存活过滤，顺带进行Finger识别
     url_list = host_alive(url_list)
 
     task_queue = queue.Queue()
     results_queue = queue.Queue()
-    num_threads = 20
+    num_threads = Request_Config['request_threads']
     threads = []
 
     if url_list is None:
@@ -100,6 +110,36 @@ def scan_active(url_list=None, uri_list=None, Request_Config=None):
     #     status_code, http_method, body_length, url = results_queue.get(block=False)
     #     match_results[reg_rule_name] = match_result
     return results_queue
+
+
+def manual_filter(url_list=None):
+    """
+    手动筛选domain
+    :param url_list:
+    :return:
+    """
+    new_url_list = []
+    black_domain = []
+    white_domain = []
+    for url in url_list:
+        domain = url.split('/')[2]
+        # 先对比是否在黑白名单中
+        if (domain not in white_domain) and (domain not in black_domain):
+            choose_status = True
+            while choose_status:
+                choose = input(f'域名/IP: {domain} 是否要进行扫描？[y/N] ')
+                if choose == 'Y' or choose == 'y':
+                    white_domain.append(domain)
+                    new_url_list.append(url)
+                    choose_status = False
+                elif choose == 'N' or choose == 'n' or choose == '':
+                    black_domain.append(domain)
+                    choose_status = False
+        elif domain in white_domain:
+            new_url_list.append(url)
+        else:
+            continue
+    return new_url_list
 
 
 # 根据黑白名单过滤一下数组
@@ -188,14 +228,12 @@ def url_target(url, uri):
     :param uri:
     :param scrabbled_rule:
     :return: uriList
-
     针对url和uri的多种情况：
     1.对于存在get参数的url，选择不拼接uri，直接返回即可。
     2.要根据路由绕过策略选择拼接方式，例如shiro的绕过、spring的绕过、nginx代理的绕过策略，特殊头的绕过等。
         2.1.shiro：https://www.freebuf.com/vuls/362341.html
         2.2.spring：
     3.为了减少发包数量，提高命中正确率，应该对比url中的uri和uri。合理的”去重“，例如 http://www.baidu.com/a/b/c /b/d，应该拼接为 http://www.baidu.com/a/b/d
-
     """
     if is_page(url):
         return url
@@ -214,7 +252,6 @@ def is_page(url=''):
 
 def scrabbled_url(url, uri):
     urlList = url.split('/')
-
     if len(urlList) == 3:  # url中的路径为空
         return url + '/' + uri
     elif len(urlList) == 4:  # url中的路径为 /
@@ -236,10 +273,20 @@ def scrabbled_url(url, uri):
 
 
 if __name__ == '__main__':
-    print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc', 'qwe/zxc'))
-    print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc/', 'qwe/zxc'))
-    print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc', '/qwe/zxc'))
-    print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc', '/qwe/zxc/'))
-    print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc/', '/zxc/a/zxc/'))
-    print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc/', './qwe/zxc'))
-    print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc', '../../qwe/zxc'))
+    # print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc', 'qwe/zxc'))
+    # print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc/', 'qwe/zxc'))
+    # print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc', '/qwe/zxc'))
+    # print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc', '/qwe/zxc/'))
+    # print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc/', '/zxc/a/zxc/'))
+    # print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc/', './qwe/zxc'))
+    # print(scrabbled_url('https://www.baidu.com/qwe/asd/zxc', '../../qwe/zxc'))
+    url_list = [
+        'https://www.baidu.com/qwe/asd/zxc',
+        'https://www.baidu.com/qwe/asd/zxc',
+        'https://www.1baidu.com/qwe/asd/zxc',
+        'https://www.2baidu.com/qwe/asd/zxc',
+        'https://www.4baidu.com/qwe/asd/zxc',
+        'https://www.4baidu.com/qwe/asd/zxc',
+        'https://www.5baidu.com:8080/qwe/asd/zxc'
+    ]
+    print(manual_filter(url_list))

@@ -31,6 +31,7 @@ File_Config:
       - flv
       - wmv
       - mkv
+      - wxss
   White_Suffix_list:
     active: false
     suffix_list:
@@ -44,7 +45,7 @@ Regex_Config:
   App_Name_regex: '"navigationBarTitleText": "(.*)",'
 
   # 常见顶级域名匹配
-  Domain_regex: (https?://)?(([a-zA-Z0-9-_]{1,61}[a-zA-Z0-9-_]\.)+(?:com|org|net|edu|gov|int|mil|biz|info|name|pro|xyz|top|club|cn)(?::[0-9]{1,5})?)
+  Domain_regex: (([a-zA-Z0-9-_]{1,61}[a-zA-Z0-9-_]\.)+(com|org|net|edu|gov|info|xyz|top|cn|cc|vip)(?::[0-9]{1,5})?)|(?:(https?|ftp|socks|MQ|mysql):\/\/|www\.)([a-zA-Z0-9\=:?%\.\+&_-]+)
   # 顶级域名pro
   #Domain_regex: (https?://)?(([a-zA-Z0-9-_]{1,61}[a-zA-Z0-9-_]\.)+(?:com|org|net|edu|gov|int|mil|biz|info|name|pro|aero|coop|museum|asia|cat|jobs|mobi|tel|travel|xxx|[a-z]{2}|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cu|cv|cw|cx|cy|cz|de|dj|dk|dm|do|dz|ec|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|za|zm|zw)(?::[0-9]{1,5})?)
 
@@ -81,7 +82,8 @@ Regex_Config:
 # URL/API自动验活配置
 Request_Config:
   # 自动验活开关
-  request_active: False
+  request_active: true
+  request_threads: 50
 
   # 去除一些常用遇到的域名, 正则or字符串, 黑白名单只取其一，白名单优先级高
   hostname_filter_rule:
@@ -97,12 +99,15 @@ Request_Config:
     disallowed:  # 默认不扫描内网ip
       - ((127\.0\.0\.1)|(10(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){3})|(172\.((1[6-9])|(2\d)|(3[01]))(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){2})|(192\.168(?:\.(?:2(?:5[0-5]|[0-4]\d)|1\d{2}|[1-9]\d|\d)){2}))(?!\d)
 
+  # 是否开启手动筛选domain
+  manual_filter: true
+
   # uri的过滤规则
   uri_filter_rule:
     allowed: []
     disallowed: # 默认去除带 del (删除) 字样的uri
       - del
-  # url拼凑规则,
+  # url拼凑规则
   scrabbled_rule: []
 
   # 请求的方式
@@ -125,6 +130,13 @@ Request_Config:
   proxies:
     http: http://127.0.0.1:10809
 #    https: https://127.0.0.1:8080
+
+#  结果输出配置
+  include_status_code:
+    - 20x
+    - 30x
+    - 40x
+    - 50x
 
 
   # 非 200 页面尝试绕过

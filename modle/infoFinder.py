@@ -86,10 +86,15 @@ def match_content(regex, target_folder, file_scan_config):
 
 
 def clear_list(list01, file_scan_config):
+    black_list = ['http', 'https']
     tamp_list = []
     for i in list01:
-        if not isinstance(i, str):
-            i = max(i)
+        if not isinstance(i, str):  # 检测是否为str对象
+            i = list(i)
+            for j in range(len(i)):
+                if i[j] in black_list:
+                    i[j] = ''
+            i = max(i, key=len)
         if i not in tamp_list and check_suffix(i, file_scan_config):
             tamp_list.append(i)
     return tamp_list
@@ -112,9 +117,9 @@ def check_suffix(filename, file_scan_config):
 def write2excel(match_results=None, Excel_Folder=None):
 
     if match_results['App_Name_regex']:
-        excel_name = f"{match_results['App_Name_regex'][0]}_{time.strftime('%Y%m%d%H%M%S')}.xlsx"
+        excel_name = f"{match_results['App_Name_regex'][0]}_{time.strftime('%Y_%m_%d_%H_%M_%S')}.xlsx"
     else:
-        excel_name = f"{time.strftime('%Y%m%d%H%M%S')}.xlsx"
+        excel_name = f"{time.strftime('%Y_%m_%d_%H_%M_%S')}.xlsx"
 
     # 文件路径参数
     current_directory = os.getcwd()
@@ -149,7 +154,8 @@ def infoFinder(target_folder='', all_config=None):
     # for i in match_results:
     #     print(f'\033[0;32;40m{i}\033[0m: {match_results[i]}')
     write2excel(match_results, all_config['File_Config']['Excel_Folder'])
-    active_request.scan_active(match_results['Url_regex'], match_results['Uri_regex'], all_config['Request_Config'])
+    if all_config['Request_Config']['request_active']:
+        active_request.scan_active(match_results['Url_regex'], match_results['Uri_regex'], all_config['Request_Config'])
     return
 
 

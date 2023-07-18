@@ -7,7 +7,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # 添加必须的参数
-    parser.add_argument("--mode", choices=["sp", "sf", "wf"], help="选择启动模式：sp 扫描指定的小程序包; sf 扫描指定的文件夹; wf 监控微信小程序更新包")
+    parser.add_argument("--mode", choices=["sp", "sf", "mf"], help="选择启动模式：sp 扫描指定的小程序包; sf 扫描指定的文件夹; mf 监控微信小程序更新包")
 
     # 添加可选参数
     parser.add_argument("--config-file", default=r'./config/config.yaml', help="指定配置文件路径, default： ./config/config.yaml")
@@ -25,7 +25,7 @@ if __name__ == '__main__':
             exit(1)
         Applet_Packet_Save_Folder = unwxapkg.unveilr_unpacket(args.folder_path, args.wxid, config['File_Config'])
         infoFinder.infoFinder(Applet_Packet_Save_Folder)
-    elif args.mode == 'wf':
+    elif args.mode == 'mf':
         unwxapkg.monitor_folder(config)
     elif args.mode == 'sf':
         if args.folder_path is None:
