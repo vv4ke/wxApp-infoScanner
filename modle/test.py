@@ -1,18 +1,18 @@
-import argparse
+import requests
+from requests.exceptions import RequestException, HTTPError, ConnectionError, Timeout
 
-parser = argparse.ArgumentParser(description='Description of your program')
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('-sp', metavar='<encrypted_file>', type=str, help='Scan encrypted file')
-group.add_argument('-wf', metavar='<watch_folder>', type=str, help='Monitor folder')
-group.add_argument('-sf', metavar='<scan_folder>', type=str, help='Scan folder')
-parser.add_argument('--wxid', metavar='<decryption_key>', type=str, help='Decryption key for encrypted file')
+try:
+    # 发送HTTP请求
+    response = requests.get('http://devmap02.mcd.com.cn/')
 
-args = parser.parse_args()
-
-if args.sp:
-    print(f"Scanning encrypted file: {args.sp}")
-    print(f"Using decryption key: {args.wxid}")
-elif args.wf:
-    print(f"Monitoring folder: {args.wf}")
-elif args.sf:
-    print(f"Scanning folder: {args.sf}")
+    # 处理HTTP响应
+    if response.status_code == 200:
+        print(response.text)
+    else:
+        response.raise_for_status()  # 抛出HTTP错误
+except ConnectionError as e:
+    print('Connection Error:', e)
+except Timeout as e:
+    print('Timeout Error:', e)
+except RequestException as e:
+    print('Request Error:', e)

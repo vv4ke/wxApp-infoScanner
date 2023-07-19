@@ -1,10 +1,10 @@
 import re
 import os
-from modle import config
 import queue
 import threading
 import pandas as pd
 import time
+from modle import active_request
 
 
 def worker(task_queue, results_queue):
@@ -13,6 +13,7 @@ def worker(task_queue, results_queue):
         try:
             task_arg = task_queue.get(block=False)
             reg_rule_name, regex, target_folder, file_scan_config = task_arg
+            regex = re.compile(regex)   # 创建对象匹配速度快
             match_result = match_content(regex, target_folder, file_scan_config)
             # 将处理结果存储到 results 队列中
             result = [reg_rule_name, match_result]
@@ -61,7 +62,7 @@ def start_scan(file_scan_config, regex_config, target_folder):
     return match_results
 
 
-def match_content(reg, target_folder, file_scan_config):
+def match_content(regex, target_folder, file_scan_config):
     match_results = []
     for (current_path, son_folders_name, files_name) in os.walk(target_folder):
         # 先匹配当前文件夹中的文件
@@ -71,7 +72,7 @@ def match_content(reg, target_folder, file_scan_config):
                     with open(os.path.join(current_path, file), 'r', encoding='utf-8', errors='ignore') as f:
                         file_content = f.read()
                         # print(f"正则：{reg}\n文件：{os.path.join(current_path, file)}")
-                        match_result = re.findall(reg, file_content)
+                        match_result = regex.findall(file_content)
                         match_results += match_result
                 else:
                     continue
@@ -79,16 +80,21 @@ def match_content(reg, target_folder, file_scan_config):
         if son_folders_name is not None:
             for son_folder_name in son_folders_name:
                 son_target_folder = os.path.join(current_path, son_folder_name)
-                match_result = match_content(reg, son_target_folder, file_scan_config)
+                match_result = match_content(regex, son_target_folder, file_scan_config)
                 match_results += match_result
     return clear_list(match_results, file_scan_config)
 
 
 def clear_list(list01, file_scan_config):
+    black_list = ['http', 'https']
     tamp_list = []
     for i in list01:
-        if not isinstance(i, str):
-            i = max(i)
+        if not isinstance(i, str):  # 检测是否为str对象
+            i = list(i)
+            for j in range(len(i)):
+                if i[j] in black_list:
+                    i[j] = ''
+            i = max(i, key=len)
         if i not in tamp_list and check_suffix(i, file_scan_config):
             tamp_list.append(i)
     return tamp_list
@@ -111,9 +117,9 @@ def check_suffix(filename, file_scan_config):
 def write2excel(match_results=None, Excel_Folder=None):
 
     if match_results['App_Name_regex']:
-        excel_name = f"{match_results['App_Name_regex'][0]}_{time.strftime('%Y%m%d%H%M%S')}.xlsx"
+        excel_name = f"{match_results['App_Name_regex'][0]}_{time.strftime('%Y_%m_%d_%H_%M_%S')}.xlsx"
     else:
-        excel_name = f"{time.strftime('%Y%m%d%H%M%S')}.xlsx"
+        excel_name = f"{time.strftime('%Y_%m_%d_%H_%M_%S')}.xlsx"
 
     # 文件路径参数
     current_directory = os.getcwd()
@@ -144,12 +150,12 @@ def check_folder_exists(folder_path=None):
 
 
 def infoFinder(target_folder='', all_config=None):
-    File_Config = all_config['File_Config']
-    Regex_Config = all_config['Regex_Config']
-    match_results = start_scan(File_Config, Regex_Config, target_folder)
-    for i in match_results:
-        print(f'\033[0;32;40m{i}\033[0m: {match_results[i]}')
-    write2excel(match_results, File_Config['Excel_Folder'])
+    match_results = start_scan(all_config['File_Config'], all_config['Regex_Config'], target_folder)
+    # for i in match_results:
+    #     print(f'\033[0;32;40m{i}\033[0m: {match_results[i]}')
+    write2excel(match_results, all_config['File_Config']['Excel_Folder'])
+    if all_config['Request_Config']['request_active']:
+        active_request.scan_active(match_results['Url_regex'], match_results['Uri_regex'], all_config['Request_Config'])
     return
 
 
