@@ -32,5 +32,5 @@ python main.py -h
 ## 后续
 
 - 加入基本的漏洞扫描：spring、tomcat、swagger类的。
-- 加入 ai 识别能力，对fuzzing的payload进行优化，剔除相关危险操作的URI。
+- 加入 ai 识别能力，对fuzzing的payload进行优化，剔除相关危险操作的URI、自动补充相关参数。
 - API封装。
