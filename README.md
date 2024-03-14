@@ -22,8 +22,7 @@
 `python .\main.py --mode mf`
 4. 再打开小程序就行了。
 5. 有演示视频。
-
-<iframe src="//player.bilibili.com/player.html?aid=1251817003&bvid=BV1LJ4m187Gq&cid=1470148137&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+![demo_video.gif](img/demo_video.gif)
 
 ## More
 1. 你这正则写的不行，我要自己弄。
