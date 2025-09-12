@@ -7,7 +7,7 @@
 
 # 文件相关配置
 File_Config:
-  WX_Applet_Path: D:\software\WeChat\WeChat Files\WeChat Files\Applet\
+  WX_Applet_Path: C:\Users\25772\AppData\Roaming\Tencent\xwechat\radium\Applet\packages
   Sleep_Time: 10
   Applet_Packet_Save_Path: app_code
   Unveilr_Depth: 2

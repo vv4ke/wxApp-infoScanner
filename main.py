@@ -1,9 +1,10 @@
 import argparse
+import threading
 import yaml
 import os
 import time
 
-from modules import decomplie_wxapp, info_finder
+from modules import decomplie_wxapp, info_finder, wx_hook
 
 
 def load_config(config_yaml_path=None, load_type=None):
@@ -30,6 +31,7 @@ if __name__ == '__main__':
     parser.add_argument("--config-file", default=r'config.yaml', help="指定配置文件路径, default： ./config/config.yaml")
     parser.add_argument("--wxid", help="微信小程序的 AES secret key")
     parser.add_argument("--folder-path", help="指定的包或文件夹路径")
+    parser.add_argument('-hook', action='store_true', help='启用 Hook 功能')
     # 解析命令行参数
     args = parser.parse_args()
 
@@ -64,16 +66,23 @@ if __name__ == '__main__':
             after = dict([(f, None) for f in os.listdir(wx_app_path)])
             added = [f for f in after if not f in before]
             if added:
-                print("New folder(s) created:", ", ".join(added))
-                for son_folder in added:
-                    print("等待程序下载...")
-                    time.sleep(sleep_time)
-                    # 反编译小程序包
-                    wx_app_code_save_path = wxapp.unveilr_decompile(wx_app_path, son_folder)
-                    # 扫描小程序代码
-                    results = infoFinder.start_scan(wx_app_code_save_path)
-                    # 扫描信息存入excel
-                    infoFinder.write2excel(results)
+                try:
+                    print("New folder(s) created:", ", ".join(added))
+                    if args.hook:
+                        hook_thread = threading.Thread(target=wx_hook.run_wechat_hook(), daemon=True)
+                        hook_thread.start()
+
+                    for son_folder in added:
+                        print("等待程序下载...")
+                        time.sleep(sleep_time)
+                        # 反编译小程序包
+                        wx_app_code_save_path = wxapp.unveilr_decompile(wx_app_path, son_folder)
+                        # 扫描小程序代码
+                        results = infoFinder.start_scan(wx_app_code_save_path)
+                        # 扫描信息存入excel
+                        infoFinder.write2excel(results)
+                except:
+                    continue
             else:
                 print(before)
             before = after
